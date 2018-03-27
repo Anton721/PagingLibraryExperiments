@@ -1,8 +1,10 @@
-package com.example.user.paginglibrarytest
+package com.example.user.paginglibrarytest.data.db
 
 import com.example.user.paginglibrarytest.data.UserPost
 
-object DataSource {
+//This Repo emulate server with pagination (page 1,2,3...)
+object Repository {
+
     fun getItems(startPosition: Int, endPosition: Int): List<UserPost> {
         var posts: MutableList<UserPost> = ArrayList()
 
@@ -16,7 +18,7 @@ object DataSource {
         var posts: MutableList<UserPost> = ArrayList()
 
         for (i in page*pageSize..(page+1)*pageSize) {
-            posts.add(UserPost(i+1, "name: " + i+1, "surname: " + i+1))
+            posts.add(UserPost(i+1, "name: " + (i+1), "surname: " + (i+1)))
         }
         return posts
     }

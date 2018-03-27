@@ -1,15 +1,12 @@
 package com.example.user.paginglibrarytest
 
+import android.arch.lifecycle.Observer
+import android.arch.paging.LivePagedListBuilder
 import android.arch.paging.PagedList
-import android.arch.paging.PagedListAdapter
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.support.annotation.MainThread
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.example.user.paginglibrarytest.data.UserPost
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -17,23 +14,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
-                .setPageSize(40)
+                .setPageSize(30)
                 .build()
 
-        val dataSource = UserPostDataSource()
+        var pagedListLiveData = LivePagedListBuilder(UserPostDataSourceFactory(),config)
+                .setBackgroundThreadExecutor(Executors.newSingleThreadExecutor()).build()
 
-        val diskExecutor = Executors.newFixedThreadPool(2)
-        val mainHandler = Handler(Looper.getMainLooper())
+        var adapter = UserPostAdapter(DiffUtilCallback())
 
-        var pagedList: PagedList<UserPost> = PagedList.Builder<Int, UserPost>(dataSource, config)
-                .setMainThreadExecutor({ mainHandler.post(it) })
-                .setBackgroundThreadExecutor(diskExecutor)
-                //.setInitialKey(120)
-                .build();
-        var adapter = UserPostAdapter(ProductDiffUtilCallback());
-        adapter.submitList(pagedList);
+        pagedListLiveData.observe(this, Observer{it?.let {adapter.submitList(it)} })
 
         var rv = findViewById<RecyclerView>(R.id.rv)
         rv.layoutManager = LinearLayoutManager(this)
