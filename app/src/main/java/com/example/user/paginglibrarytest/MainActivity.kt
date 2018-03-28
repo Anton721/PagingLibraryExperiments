@@ -18,7 +18,8 @@ class MainActivity : AppCompatActivity() {
 
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
-                .setPageSize(30)
+                .setPageSize(40)
+                .setInitialLoadSizeHint(40)
                 .build()
 
         var pagedListLiveData = LivePagedListBuilder(UserPostDataSourceFactory(),config)
